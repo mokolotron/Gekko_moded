@@ -181,12 +181,12 @@ let message2 = [
 
   if (chatId) {
     this.bot.sendMessage(chatId, message);
-    if ( config.telegrambot.encryptedMethod)
-    config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2);)
+    if ( config.telegrambot.encryptedMethod);
+    config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   } else {
     this.bot.sendMessage(this.chatId, message);
-    if ( config.telegrambot.encryptedMethod)
-   config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2);)
+    if ( config.telegrambot.encryptedMethod);
+   config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   }
 };
   // END add by mokolotron
