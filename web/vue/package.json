@@ -7,17 +7,23 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "babel-plugin-transform-commonjs-es2015-modules":"lastes",
+    "babel": "^6.23.0",
+    "babel-plugin-transform-commonjs-es2015-modules": "^4.0.1",
+    "chart.js": "^2.8.0",
     "marked": "^0.4.0",
     "superagent": "^3.8.3",
     "superagent-no-cache": "github:uditalias/superagent-no-cache",
     "vue": "^2.5.16",
+    "vue-chartjs": "^3.4.2",
+    "vue-d3": "^0.1.0",
+    "vue-d3-network": "^0.1.28",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-beta.15",
     "@vue/cli-service": "^3.0.0-beta.15",
-    "babel-plugin-transform-commonjs-es2015-modules": "^4.0.1",
     "copy-webpack-plugin": "^4.5.2",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
