@@ -10,8 +10,6 @@
 *~
 *.sass-cache
 
-git update-index --assume-unchanged strategies/
-
 # OS or Editor folders
 .DS_Store
 Thumbs.db
@@ -38,7 +36,7 @@ dwsync.xml
 *.espressostorage
 
 # Folders & files to ignore
-
+gekkoga
 node_modules
 candles.csv
 cexio.db
