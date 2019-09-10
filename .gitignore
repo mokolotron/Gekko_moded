@@ -39,7 +39,6 @@ dwsync.xml
 yarn.lock
 strategies
 config/strategies/
-config
 gekkoga
 node_modules
 candles.csv
