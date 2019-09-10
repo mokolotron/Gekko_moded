@@ -36,7 +36,8 @@ dwsync.xml
 *.espressostorage
 
 # Folders & files to ignore
-strategies
+yarn.lock
+strategies/*
 gekkoga
 node_modules
 candles.csv
