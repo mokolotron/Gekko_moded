@@ -32,6 +32,7 @@
     "lodash": "2.x",
     "mathjs": "^6.0.3",
     "moment": "^2.20.1",
+    "node-telegram-bot-api": "^0.24.0",
     "opn": "^4.0.2",
     "promisify-node": "^0.5.0",
     "prompt-lite": "0.1.1",

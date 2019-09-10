@@ -16,8 +16,8 @@ config.debug = true; // for additional logging / debugging
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'bitfinex',
-  currency: 'USD',
+  exchange: 'binance',
+  currency: 'USDT',
   asset: 'BTC',
 
   // You can set your own tickrate (refresh rate).
@@ -32,9 +32,9 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'SMA_TId',
-  candleSize: 60,
-  historySize: 160,
+  method: 'MACD',
+  candleSize: 1,
+  historySize: 1,
 }
 
 // MACD settings:

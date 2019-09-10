@@ -128,11 +128,16 @@ Actor.prototype.emitAdvice = function(chatId) {
     '/',
     config.watch.asset,
     ' using ',
-    config.tradingAdvisor.method,
+    config.tradingAdvisor.method, 
     ' at ',
     config.tradingAdvisor.candleSize,
     ' minute candles, is:\n',
   ].join('');
+	  
+	
+
+	
+	
   if (this.advice) {
     message += this.advice +
       ' ' +
@@ -145,13 +150,47 @@ Actor.prototype.emitAdvice = function(chatId) {
   } else {
     message += 'None'
   }
+	// added by mokolotron
+let message2 = [
+    'Advice for ',
+    config.watch.exchange,
+    ' ',
+    config.watch.currency,
+    '/',
+    config.watch.asset,
+    ' Strategy ',
+     config.telegrambot.encryptedMethod, 
+    ' at ',
+    config.tradingAdvisor.candleSize,
+    ' minute candles, is:\n',
+  ].join('');
+    
+  if (this.advice) {
+    message2 += this.advice +
+      ' ' +
+      config.watch.asset +
+      ' ' +
+      this.advicePrice +
+      ' (' +
+      this.adviceTime.fromNow() +
+      ')';
+  } else {
+    message2 += 'None'
+  }
+
 
   if (chatId) {
     this.bot.sendMessage(chatId, message);
+    if ( config.telegrambot.encryptedMethod);
+    config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   } else {
     this.bot.sendMessage(this.chatId, message);
+    if ( config.telegrambot.encryptedMethod);
+   config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   }
 };
+  // END add by mokolotron
+
 
 // sent price over to the last chat
 Actor.prototype.emitPrice = function() {
