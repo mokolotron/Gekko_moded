@@ -16,9 +16,14 @@ config.debug = true; // for additional logging / debugging
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'binance',
-  currency: 'USDT',
+  exchange: 'bitfinex',
+  currency: 'USD',
   asset: 'BTC',
+
+  // You can set your own tickrate (refresh rate).
+  // If you don't set it, the defaults are 2 sec for
+  // okcoin and 20 sec for all other exchanges.
+  // tickrate: 20
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -27,9 +32,9 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'MACD',
+  method: 'SMA_TId',
   candleSize: 60,
-  historySize: 10,
+  historySize: 160,
 }
 
 // MACD settings:
@@ -187,10 +192,14 @@ config.ircbot = {
 }
 
 config.telegrambot = {
-  enabled: false,
+  enabled: true,
   // Receive notifications for trades and warnings/errors related to trading
-  emitTrades: false,
-  token: 'YOUR_TELEGRAM_BOT_TOKEN',
+  emitTrades: true,
+  emitUpdates: true,
+  chanelsID: ["-1001443357345"],		 //yourChannelsID... as arr
+  encryptedMethod: "TestModedPlugin",    //how people see name your strategy
+  token: '838974969:AAGQyulCKPluNZIsicFAD8LoKxE4WrQW94k',
+  botName: 'Lunar-Signal'
 };
 
 config.twitter = {
