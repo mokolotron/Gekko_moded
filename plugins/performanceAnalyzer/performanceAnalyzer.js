@@ -1,10 +1,10 @@
 
 const _ = require('lodash');
 const moment = require('moment');
-
+var log = require('../../core/log.js');
 const statslite = require('stats-lite');
 const util = require('../../core/util');
-const log = require(util.dirs().core + 'log')
+//const log = require(util.dirs().core + 'log')
 const ENV = util.gekkoEnv();
 
 const config = util.getConfig();
@@ -118,16 +118,18 @@ PerformanceAnalyzer.prototype.processTradeCompleted = function(trade) {
 }
 
 PerformanceAnalyzer.prototype.registerRoundtripPart = function(trade) {
-  if(this.trades === 1 && trade.action === 'sell') {
-    // this is not part of a valid roundtrip
-    return;
-  }
+
 
   if(trade.action === 'buy') {
-    if (this.roundTrip.exit) {
-      this.roundTrip.id++;
-      this.roundTrip.exit = false
-    }
+
+    if(this.roundTrip.entry) {
+      this.roundTrip.exit = {
+        date: trade.date,
+        price: trade.price,
+        total: trade.portfolio.currency + (trade.portfolio.asset * trade.price),
+      }
+      this.handleCompletedRoundtrip();
+}
 
     this.roundTrip.entry = {
       date: trade.date,
@@ -136,6 +138,23 @@ PerformanceAnalyzer.prototype.registerRoundtripPart = function(trade) {
     }
     this.openRoundTrip = true;
   } else if(trade.action === 'sell') {
+    if(this.roundTrip.entry) {
+      this.roundTrip.exit = {
+       date: trade.date,
+       price: trade.price,
+       total: trade.portfolio.currency + (trade.portfolio.asset * trade.price),
+      }
+      //this.logger.handleRoundtrip();
+      this.roundTrip.entry = false;
+  }
+  this.roundTrip.exit = false
+  this.roundTrip.entry = {
+    date: trade.date,
+    price: trade.price,
+    total: trade.portfolio.currency + (trade.portfolio.asset * trade.price),
+  }
+} else if(trade.action === 'close') {
+
     this.roundTrip.exit = {
       date: trade.date,
       price: trade.price,
@@ -164,7 +183,7 @@ PerformanceAnalyzer.prototype.handleCompletedRoundtrip = function() {
 
   roundtrip.pnl = roundtrip.exitBalance - roundtrip.entryBalance;
   roundtrip.profit = (100 * roundtrip.exitBalance / roundtrip.entryBalance) - 100;
-
+  log.debug("PNL", roundtrip.profit);
   this.roundTrips[this.roundTrip.id] = roundtrip;
 
   this.logger.handleRoundtrip(roundtrip);
@@ -243,6 +262,7 @@ PerformanceAnalyzer.prototype.finalize = function(done) {
   if(report) {
     this.logger.finalize(report);
     this.emit('performanceReport', report);
+    log.debug("Total Profit", report);
   }
   done();
 }

@@ -108,35 +108,51 @@ Trader.prototype.getPortfolio = function(callback) {
     if (err) return callback(err);
 
     // We are only interested in funds in the "exchange" wallet
-    data = data.filter(c => c.type === 'exchange');
+    data = data.filter(c => c.type === 'trading');
 
     const asset = _.find(data, c => c.currency.toUpperCase() === this.asset);
     const currency = _.find(data, c => c.currency.toUpperCase() === this.currency);
 
     let assetAmount, currencyAmount;
 
-    if(_.isObject(asset) && _.isNumber(+asset.available) && !_.isNaN(+asset.available))
+    if (_.isObject(asset) && _.isNumber(+asset.available) && !_.isNaN(+asset.available))
       assetAmount = +asset.available;
     else {
       assetAmount = 0;
     }
 
-    if(_.isObject(currency) && _.isNumber(+currency.available) && !_.isNaN(+currency.available))
+    if (_.isObject(currency) && _.isNumber(+currency.available) && !_.isNaN(+currency.available))
       currencyAmount = +currency.available;
     else {
       currencyAmount = 0;
     }
 
-    const portfolio = [
-      { name: this.asset, amount: assetAmount },
-      { name: this.currency, amount: currencyAmount },
-    ];
+    let processPositions = (err, operations) => {
+      if (err) return callback(err);
+      if (operations == undefined) {
+        log.error("got undefined operations list", err);
+        return callback()
+      }
+      operations.forEach((operation) => {
+        if (operation.symbol.toUpperCase().substr(0, 3) == this.asset) {
+          assetAmount += parseFloat(operation.amount)
+        }
+      })
 
-    callback(undefined, portfolio);
-  };
 
-  const fetch = cb => this.bitfinex.wallet_balances(this.handleResponse('getPortfolio', cb));
-  retry(null, fetch, processResponse);
+      const portfolio = [
+        { name: this.asset, amount: assetAmount },
+        { name: this.currency, amount: currencyAmount },
+      ];
+
+      callback(undefined, portfolio);
+    };
+
+    this.bitfinex.active_positions(this.handleResponse('getPortfolio', processPositions))
+
+    const fetch = cb => this.bitfinex.wallet_balances(this.handleResponse('getPortfolio', cb));
+    retry(null, fetch, processResponse);
+  }
 }
 
 Trader.prototype.getTicker = function(callback) {
@@ -166,7 +182,7 @@ Trader.prototype.roundPrice = function(price) {
   return price;
 }
 
-Trader.prototype.submitOrder = function(type, amount, price, callback) {
+Trader.prototype.submitOrder = function(side, amount, price, callback) {
   const processResponse = (err, data) => {
     if (err)
       return callback(err);
@@ -178,8 +194,9 @@ Trader.prototype.submitOrder = function(type, amount, price, callback) {
     amount + '',
     price + '',
     this.name.toLowerCase(),
+    side,
     type,
-    'exchange limit',
+   // 'exchange limit',
     this.handleResponse('submitOrder', cb)
   );
 
@@ -187,11 +204,11 @@ Trader.prototype.submitOrder = function(type, amount, price, callback) {
 }
 
 Trader.prototype.buy = function(amount, price, callback) {
-  this.submitOrder('buy', amount, price, callback);
+  this.submitOrder('buy', amount, price, callback, limit);
 }
 
 Trader.prototype.sell = function(amount, price, callback) {
-  this.submitOrder('sell', amount, price, callback);
+  this.submitOrder('sell', amount, price, callback, 'limit');
 }
 
 Trader.prototype.checkOrder = function(order_id, callback) {
@@ -276,14 +293,14 @@ Trader.prototype.cancelOrder = function(order_id, callback) {
 }
 
 Trader.prototype.getTrades = function(since, callback, descending) {
-  const processResponse = (err, data) => {  
+  const processResponse = (err, data) => {
     if (err) return callback(err);
 
     var trades = _.map(data, function(trade) {
       return {
-        tid: trade.tid, 
-        date:  trade.timestamp, 
-        price: +trade.price, 
+        tid: trade.tid,
+        date:  trade.timestamp,
+        price: +trade.price,
         amount: +trade.amount
       }
     });
@@ -291,9 +308,9 @@ Trader.prototype.getTrades = function(since, callback, descending) {
     callback(undefined, descending ? trades : trades.reverse());
   };
 
-  var path = this.pair; 
-  if(since) 
-    path += '?limit_trades=2000'; 
+  var path = this.pair;
+  if(since)
+    path += '?limit_trades=2000';
 
   const handler = cb => this.bitfinex.trades(path, this.handleResponse('getTrades', cb));
   retry(null, handler, processResponse);
@@ -317,3 +334,5 @@ Trader.getCapabilities = function () {
 }
 
 module.exports = Trader;
+
+

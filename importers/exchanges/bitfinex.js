@@ -80,7 +80,7 @@ var fetch = () => {
       // make sure we fetch with overlap from last batch
       const since = lastTimestamp - 1000;
       fetcher.getTrades(since, handleFetch);
-    }, 2500);
+    }, 2700);
   } else {
     lastTimestamp = from.valueOf();
     batch_start = moment(from);

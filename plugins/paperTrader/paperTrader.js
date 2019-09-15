@@ -2,12 +2,12 @@ const _ = require('lodash');
 
 const util = require('../../core/util');
 const ENV = util.gekkoEnv();
-
+var log = require('../../core/log.js');
 const config = util.getConfig();
 const calcConfig = config.paperTrader;
 const watchConfig = config.watch;
 const dirs = util.dirs();
-const log = require(dirs.core + 'log');
+//const log = require(dirs.core + 'log');
 
 const TrailingStop = require(dirs.broker + 'triggers/trailingStop');
 
@@ -80,26 +80,49 @@ PaperTrader.prototype.updatePosition = function(what) {
   // virtually trade all {currency} to {asset}
   // at the current price (minus fees)
   if(what === 'long') {
+    if(this.portfolio.asset < 0) {
+      this.portfolio.currency += this.portfolio.asset * this.price ;
+      this.portfolio.asset = 0;
+      this.trades++;
+  }
     cost = (1 - this.fee) * this.portfolio.currency;
     this.portfolio.asset += this.extractFee(this.portfolio.currency / this.price);
     amount = this.portfolio.asset;
     this.portfolio.currency = 0;
 
     this.exposed = true;
-    this.trades++;
+
   }
 
-  // virtually trade all {currency} to {asset}
+  // virtually trade all {asset} to {asset}
   // at the current price (minus fees)
   else if(what === 'short') {
-    cost = (1 - this.fee) * (this.portfolio.asset * this.price);
-    this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
-    amount = this.portfolio.currency / this.price;
-    this.portfolio.asset = 0;
+    if(this.portfolio.asset > 0) {
+      this.trades++;	        this.portfolio.currency += this.extractFee(this.portfolio.asset * this.price);
+          this.portfolio.asset = 0;
+      }
+      if(this.portfolio.asset == 0) {
+          this.portfolio.asset = -this.portfolio.currency /this.price;
+          this.portfolio.currency += this.portfolio.currency;
+      }
+    }
 
-    this.exposed = false;
-    this.trades++;
-  }
+    else if (what === 'close') {
+        // close short if exist
+       if(this.portfolio.asset < 0) {
+          this.portfolio.currency += this.portfolio.asset *this.price ;
+          this.portfolio.asset = 0;
+          this.trades++;
+          //log.debug("SHORT", "end", this.portfolio.currency, this.portfolio.asset,this.price)
+       }
+       if(this.portfolio.asset > 0) {
+          this.portfolio.currency += this.extractFee(this.portfolio.asset *this.price);
+          this.portfolio.asset = 0;
+          //log.debug("LONG", "end", this.portfolio.currency, this.portfolio.asset,this.price)
+
+    }
+  } else if(what === 'close'){
+       action = 'close';}
 
   const effectivePrice = this.price * this.fee;
 

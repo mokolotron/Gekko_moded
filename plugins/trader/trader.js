@@ -144,7 +144,11 @@ Trader.prototype.processAdvice = function(advice) {
     direction = 'buy';
   } else if(advice.recommendation === 'short') {
     direction = 'sell';
-  } else {
+  }else if(advice.recommendation === 'close') {  //// else if(close) add other type advise as close
+    direction = 'close';
+  }
+  else {
+
     log.error('ignoring advice in unknown direction');
     return;
   }
@@ -169,6 +173,7 @@ Trader.prototype.processAdvice = function(advice) {
 
   if(direction === 'buy') {
 
+
     if(this.exposed) {
       log.info('NOT buying, already exposed');
       return this.deferredEmit('tradeAborted', {
@@ -183,6 +188,12 @@ Trader.prototype.processAdvice = function(advice) {
 
     amount = this.portfolio.currency / this.price * 0.95;
 
+
+
+    if(amount > 0){
+      ////there  must be function buy() which is in old version
+      //it must be in direction because after then nothing
+    }
     log.info(
       'Trader',
       'Received advice to go long.',
@@ -223,11 +234,22 @@ Trader.prototype.processAdvice = function(advice) {
       'Selling ', this.brokerConfig.asset
     );
   }
+  else if (direction === 'close'){
+    log.debug("CLOSES")
+    log.info(
+      'Trader',
+      'Received advice to close position',
+      'Selling ', config.trader.asset
+    );
+    this.manager.trade('CLOSE');
+  }
 
   this.createOrder(direction, amount, advice, id);
-}
+};
+
 
 Trader.prototype.createOrder = function(side, amount, advice, id) {
+  ////I dont know if short can worcking with sticky orders maybe need to creacte order in exchange/orders/
   const type = 'sticky';
 
   // NOTE: this is the best check we can do at this point
