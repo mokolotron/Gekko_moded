@@ -107,53 +107,45 @@ Trader.prototype.getPortfolio = function(callback) {
   const processResponse = (err, data) => {
     if (err) return callback(err);
 
-    // We are only interested in funds in the "exchange" wallet
+    // We are only interested in funds in the "MARGIN" wallet
+    const leverage = 2;
     data = data.filter(c => c.type === 'trading');
+    ////multiply balance by 2 to take a leverage
+    data = data.map((obj)=> {
+      nobj = obj;
+      nobj.amount = obj.amount*leverage;
+      nobj.available = obj.available*leverage;
+      return nobj;
+    });
 
     const asset = _.find(data, c => c.currency.toUpperCase() === this.asset);
     const currency = _.find(data, c => c.currency.toUpperCase() === this.currency);
 
     let assetAmount, currencyAmount;
 
-    if (_.isObject(asset) && _.isNumber(+asset.available) && !_.isNaN(+asset.available))
+    if(_.isObject(asset) && _.isNumber(+asset.available) && !_.isNaN(+asset.available))
       assetAmount = +asset.available;
     else {
       assetAmount = 0;
     }
 
-    if (_.isObject(currency) && _.isNumber(+currency.available) && !_.isNaN(+currency.available))
+    if(_.isObject(currency) && _.isNumber(+currency.available) && !_.isNaN(+currency.available))
       currencyAmount = +currency.available;
     else {
       currencyAmount = 0;
     }
 
-    let processPositions = (err, operations) => {
-      if (err) return callback(err);
-      if (operations == undefined) {
-        log.error("got undefined operations list", err);
-        return callback()
-      }
-      operations.forEach((operation) => {
-        if (operation.symbol.toUpperCase().substr(0, 3) == this.asset) {
-          assetAmount += parseFloat(operation.amount)
-        }
-      })
+    const portfolio = [
+      { name: this.asset, amount: assetAmount },
+      { name: this.currency, amount: currencyAmount },
+    ];
 
+    callback(undefined, portfolio);
+  };
 
-      const portfolio = [
-        { name: this.asset, amount: assetAmount },
-        { name: this.currency, amount: currencyAmount },
-      ];
-
-      callback(undefined, portfolio);
-    };
-
-    this.bitfinex.active_positions(this.handleResponse('getPortfolio', processPositions))
-
-    const fetch = cb => this.bitfinex.wallet_balances(this.handleResponse('getPortfolio', cb));
-    retry(null, fetch, processResponse);
-  }
-}
+  const fetch = cb => this.bitfinex.wallet_balances(this.handleResponse('getPortfolio', cb));
+  retry(null, fetch, processResponse);
+};
 
 Trader.prototype.getTicker = function(callback) {
   const processResponse = (err, data) => {
@@ -182,14 +174,15 @@ Trader.prototype.roundPrice = function(price) {
   return price;
 }
 
-Trader.prototype.submitOrder = function(side, amount, price, callback) {
+Trader.prototype.submitOrder = function(side, amount, price, callback, type) {
   const processResponse = (err, data) => {
     if (err)
       return callback(err);
 
     callback(null, data.order_id);
-  }
-
+  };
+  //const type = 'limit';
+  //console.log('!!!!!!!!!!!!!!!!!!!!!', 'type:::::::::', type);
   const fetch = cb => this.bitfinex.new_order(this.pair,
     amount + '',
     price + '',
@@ -204,7 +197,7 @@ Trader.prototype.submitOrder = function(side, amount, price, callback) {
 }
 
 Trader.prototype.buy = function(amount, price, callback) {
-  this.submitOrder('buy', amount, price, callback, limit);
+  this.submitOrder('buy', amount, price, callback, 'limit');
 }
 
 Trader.prototype.sell = function(amount, price, callback) {

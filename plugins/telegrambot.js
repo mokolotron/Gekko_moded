@@ -56,26 +56,26 @@ if(emitTrades) {
     tradeInitiated.portfolio + '\nBalance: ' + tradeInitiated.balance;
     this.bot.sendMessage(this.chatId, message);
   }
-  
+
   Actor.prototype.processTradeCancelled = function (tradeCancelled) {
     var message = 'Trade cancelled. ID: ' + tradeCancelled.id;
     this.bot.sendMessage(this.chatId, message);
   }
-  
+
   Actor.prototype.processTradeAborted = function (tradeAborted) {
     var message = 'Trade aborted. ID: ' + tradeAborted.id +
     '\nNot creating order! Reason: ' + tradeAborted.reason;
     this.bot.sendMessage(this.chatId, message);
   }
-  
+
   Actor.prototype.processTradeErrored = function (tradeErrored) {
     var message = 'Trade errored. ID: ' + tradeErrored.id +
     '\nReason: ' + tradeErrored.reason;
     this.bot.sendMessage(this.chatId, message);
   }
-  
+
   Actor.prototype.processTradeCompleted = function (tradeCompleted) {
-    var message = 'Trade completed. ID: ' + tradeCompleted.id + 
+    var message = 'Trade completed. ID: ' + tradeCompleted.id +
     '\nAction: ' + tradeCompleted.action +
     '\nPrice: ' + tradeCompleted.price +
     '\nAmount: ' + tradeCompleted.amount +
@@ -84,7 +84,7 @@ if(emitTrades) {
     '\nBalance: ' + tradeCompleted.balance +
     '\nFee percent: ' + tradeCompleted.feePercent +
     '\nEffective price: ' + tradeCompleted.effectivePrice;
-    this.bot.sendMessage(this.chatId, message); 
+    this.bot.sendMessage(this.chatId, message);
   }
 }
 
@@ -128,16 +128,16 @@ Actor.prototype.emitAdvice = function(chatId) {
     '/',
     config.watch.asset,
     ' using ',
-    config.tradingAdvisor.method, 
+    config.tradingAdvisor.method,
     ' at ',
     config.tradingAdvisor.candleSize,
     ' minute candles, is:\n',
   ].join('');
-	  
-	
 
-	
-	
+
+
+
+
   if (this.advice) {
     message += this.advice +
       ' ' +
@@ -159,12 +159,12 @@ let message2 = [
     '/',
     config.watch.asset,
     ' Strategy ',
-     config.telegrambot.encryptedMethod, 
+     config.telegrambot.encryptedMethod,
     ' at ',
     config.tradingAdvisor.candleSize,
     ' minute candles, is:\n',
   ].join('');
-    
+
   if (this.advice) {
     message2 += this.advice +
       ' ' +
@@ -181,11 +181,11 @@ let message2 = [
 
   if (chatId) {
     this.bot.sendMessage(chatId, message);
-    if ( config.telegrambot.encryptedMethod);
+    if ( config.telegrambot.chanelsID.length > 0 );
     config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   } else {
     this.bot.sendMessage(this.chatId, message);
-    if ( config.telegrambot.encryptedMethod);
+    if ( config.telegrambot.chanelsID.length > 0);
    config.telegrambot.chanelsID.forEach((chanelID) => this.bot.sendMessage(chanelID, message2));
   }
 };

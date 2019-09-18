@@ -94,6 +94,7 @@ class Broker {
   }
 
   syncPrivateData(callback) {
+
     async.series([
       this.setTicker,
       next => setTimeout(next, this.interval),
@@ -102,6 +103,8 @@ class Broker {
       this.portfolio.setBalances.bind(this.portfolio),
       next => setTimeout(next, this.interval)
     ], callback);
+
+
   }
 
   setTicker(callback) {

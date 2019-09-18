@@ -58,7 +58,9 @@ util.makeEventEmitter(Trader);
 Trader.prototype.sync = function(next) {
   log.debug('syncing private data');
   this.broker.syncPrivateData(() => {
+    console.log('Im here 61');
     if(!this.price) {
+
       this.price = this.broker.ticker.bid;
     }
 
@@ -68,9 +70,10 @@ Trader.prototype.sync = function(next) {
     this.setBalance();
 
     if(this.sendInitialPortfolio && !_.isEqual(oldPortfolio, this.portfolio)) {
+      log.debug('Debug here: 71');
       this.relayPortfolioChange();
     }
-
+    log.debug('Debug here: 74');
     // balance is relayed every minute
     // no need to do it here.
 
@@ -111,6 +114,7 @@ Trader.prototype.setBalance = function() {
   this.exposure = (this.portfolio.asset * this.price) / this.balance;
   // if more than 10% of balance is in asset we are exposed
   this.exposed = this.exposure > 0.1;
+  console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed);////
 }
 
 Trader.prototype.processCandle = function(candle, done) {

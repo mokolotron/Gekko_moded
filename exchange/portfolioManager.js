@@ -38,6 +38,7 @@ class Portfolio {
   }
 
   setBalances(callback) {
+
     let set = (err, fullPortfolio) => {
       if(err) {
         console.log(err);
@@ -61,11 +62,11 @@ class Portfolio {
 
       if(_.isFunction(callback))
         callback();
-    }
-
+    };
+    //console.log('Im in SETBALANCES', set);
     this.api.getPortfolio(set);
   }
-  
+
   setFee(callback) {
     this.api.getFee((err, fee) => {
       if(err)
