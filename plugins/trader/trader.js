@@ -114,7 +114,7 @@ Trader.prototype.setBalance = function() {
   this.exposure = (this.portfolio.asset * this.price) / this.balance;
   // if more than 10% of balance is in asset we are exposed
   this.exposed = this.exposure > 0.1;
-  console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed);////
+ // console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed);////
 }
 
 Trader.prototype.processCandle = function(candle, done) {
@@ -178,17 +178,17 @@ Trader.prototype.processAdvice = function(advice) {
   if(direction === 'buy') {
 
 
-    if(this.exposed) {
-      log.info('NOT buying, already exposed');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(this.exposed) {
+    //   log.info('NOT buying, already exposed');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     amount = this.portfolio.currency / this.price * 0.95;
 
@@ -205,18 +205,20 @@ Trader.prototype.processAdvice = function(advice) {
     );
 
   } else if(direction === 'sell') {
+    ////if we want to sell we must sell not that amount which we have but that
+    //// amount we will can have or amount of currency(not asset)
 
-    if(!this.exposed) {
-      log.info('NOT selling, already no exposure');
-      return this.deferredEmit('tradeAborted', {
-        id,
-        adviceId: advice.id,
-        action: direction,
-        portfolio: this.portfolio,
-        balance: this.balance,
-        reason: "Portfolio already in position."
-      });
-    }
+    // if(!this.exposed) {
+    //   log.info('NOT selling, already no exposure');
+    //   return this.deferredEmit('tradeAborted', {
+    //     id,
+    //     adviceId: advice.id,
+    //     action: direction,
+    //     portfolio: this.portfolio,
+    //     balance: this.balance,
+    //     reason: "Portfolio already in position."
+    //   });
+    // }
 
     // clean up potential old stop trigger
     if(this.activeStopTrigger) {
@@ -229,9 +231,9 @@ Trader.prototype.processAdvice = function(advice) {
 
       delete this.activeStopTrigger;
     }
-
-    amount = this.portfolio.asset;
-
+    console.log('!!!!!!!!!!',  this.portfolio); ////
+   //// amount = this.portfolio.asset;
+    amount = this.portfolio.currency / this.price * 0.95;
     log.info(
       'Trader',
       'Received advice to go short.',

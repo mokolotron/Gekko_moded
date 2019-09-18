@@ -63,7 +63,7 @@ const bindAll = (targetClass, methodNames = []) => {
 const isValidOrder = ({api, market, amount, price}) => {
   let reason = false;
 
-  // Check amount
+  // Check amount //// Maybe i ster schoss svoye
   if(amount < market.minimalOrder.amount) {
     reason = 'Amount is too small';
   }

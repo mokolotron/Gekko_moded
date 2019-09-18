@@ -135,11 +135,13 @@ Trader.prototype.getPortfolio = function(callback) {
       currencyAmount = 0;
     }
 
+
+
     const portfolio = [
       { name: this.asset, amount: assetAmount },
       { name: this.currency, amount: currencyAmount },
     ];
-
+    console.log(assetAmount, currencyAmount,  portfolio, currency, asset, data );////
     callback(undefined, portfolio);
   };
 
@@ -176,11 +178,13 @@ Trader.prototype.roundPrice = function(price) {
 
 Trader.prototype.submitOrder = function(side, amount, price, callback, type) {
   const processResponse = (err, data) => {
+    console.log(data); ////
     if (err)
       return callback(err);
 
     callback(null, data.order_id);
   };
+  ////
   //const type = 'limit';
   //console.log('!!!!!!!!!!!!!!!!!!!!!', 'type:::::::::', type);
   const fetch = cb => this.bitfinex.new_order(this.pair,
