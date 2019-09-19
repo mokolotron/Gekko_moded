@@ -16,9 +16,9 @@ config.debug = true; // for additional logging / debugging
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'binance',
-  currency: 'USDT',
-  asset: 'BTC',
+  exchange: 'bitfinex',
+  currency: 'EUR',
+  asset: 'ETH',
 
   // You can set your own tickrate (refresh rate).
   // If you don't set it, the defaults are 2 sec for
@@ -63,7 +63,7 @@ config.MACD = {
 
 // do you want Gekko to simulate the profit of the strategy's own advice?
 config.paperTrader = {
-  enabled: true,
+  enabled: false,
   // report the profit in the currency or the asset?
   reportInCurrency: true,
   // start balance, on what the current balance is compared with
@@ -90,11 +90,20 @@ config.performanceAnalyzer = {
 // watched by `config.watch`.
 config.trader = {
   enabled: false,
-  key: '',
-  secret: '',
+  key: 'quwTNjVYozxRhMA9kbRN8ceeKsOcBofOU3OYAMPzofF',
+  secret: 'LHtVIn0p8gsXBsk8TbJQ3BsaPG2mdq6OT3Z6DgJhQoE',
   username: '', // your username, only required for specific exchanges.
   passphrase: '', // GDAX, requires a passphrase.
-}
+};
+
+config.Margin_trader = {
+  enabled: true,
+  key: 'quwTNjVYozxRhMA9kbRN8ceeKsOcBofOU3OYAMPzofF',
+  secret: 'LHtVIn0p8gsXBsk8TbJQ3BsaPG2mdq6OT3Z6DgJhQoE',
+  username: '', // your username, only required for specific exchanges.
+  passphrase: '', // GDAX, requires a passphrase.
+ // leverage: 2,
+};
 
 config.eventLogger = {
   enabled: false,
@@ -196,10 +205,10 @@ config.telegrambot = {
   // Receive notifications for trades and warnings/errors related to trading
   emitTrades: true,
   emitUpdates: true,
-  chanelsID: ["-1001443357345"],		 //yourChannelsID... as arr
-  encryptedMethod: "TestModedPlugin",    //how people see name your strategy
-  token: '838974969:AAGQyulCKPluNZIsicFAD8LoKxE4WrQW94k',
-  botName: 'Lunar-Signal'
+  chanelsID: [],		 //yourChannelsID... as arr
+  encryptedMethod: "",    //how people see name your strategy
+  token: '843106770:AAH7zX11Dflj8Ulk4oCoiv4si0urf-BHNDQ',
+  botName: 'Gekko_Scope'
 };
 
 config.twitter = {

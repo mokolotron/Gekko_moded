@@ -45,52 +45,52 @@ var subscriptions = [
     handler: 'processStratNotification'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'tradeInitiated',
     handler: 'processTradeInitiated'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'tradeAborted',
     handler: 'processTradeAborted'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'tradeCompleted',
     handler: 'processTradeCompleted'
   },
   {
-    emitter: 'trader',
+    emitter:['trader', 'Margin_trader'],
     event: 'tradeCancelled',
     handler: 'processTradeCancelled'
   },
   {
-    emitter: 'trader',
+    emitter:['trader', 'Margin_trader'],
     event: 'tradeErrored',
     handler: 'processTradeErrored'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'portfolioChange',
     handler: 'processPortfolioChange'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'triggerCreated',
     handler: 'processTriggerCreated'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'triggerAborted',
     handler: 'processTriggerAborted'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'triggerFired',
     handler: 'processTriggerFired'
   },
   {
-    emitter: ['trader', 'paperTrader'],
+    emitter: ['trader', 'paperTrader', 'Margin_trader'],
     event: 'portfolioValueChange',
     handler: 'processPortfolioValueChange'
   },

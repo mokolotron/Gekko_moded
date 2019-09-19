@@ -132,6 +132,16 @@ var plugins = [
     path: config => 'trader/trader.js',
   },
   {
+    name: 'Margin_trader',
+    description: 'Follows the advice and create real MARGIN orders.',
+    slug: 'Margin_trader',
+    async: true,
+    modes: ['realtime'],
+    emits: true,
+    path: config => 'Margin_trader.js',
+  },
+
+  {
     name: 'Paper Trader',
     description: 'Paper trader that simulates fake trades.',
     slug: 'paperTrader',
