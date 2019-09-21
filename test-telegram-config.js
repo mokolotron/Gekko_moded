@@ -16,7 +16,7 @@ config.debug = true; // for additional logging / debugging
 config.watch = {
 
   // see https://gekko.wizb.it/docs/introduction/supported_exchanges.html
-  exchange: 'bitfinex',
+  exchange: 'bitfinex_margin',
   currency: 'EUR',
   asset: 'ETH',
 
@@ -32,7 +32,7 @@ config.watch = {
 
 config.tradingAdvisor = {
   enabled: true,
-  method: 'MACD',
+  method: 'DEBUG_toggle_advice',
   candleSize: 1,
   historySize: 1,
 }
@@ -102,7 +102,7 @@ config.Margin_trader = {
   secret: 'LHtVIn0p8gsXBsk8TbJQ3BsaPG2mdq6OT3Z6DgJhQoE',
   username: '', // your username, only required for specific exchanges.
   passphrase: '', // GDAX, requires a passphrase.
- // leverage: 2,
+  leverage: 2,
 };
 
 config.eventLogger = {

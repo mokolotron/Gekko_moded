@@ -52,7 +52,7 @@ const Margin_trader = function(next) {
     setInterval(this.sync, 1000 * 60 * 10);
 }
 
-log.debug('Im here!!!!!!!')
+////log.debug('Im here!!!!!!!')
 // teach our trader events
 util.makeEventEmitter(Margin_trader);
 

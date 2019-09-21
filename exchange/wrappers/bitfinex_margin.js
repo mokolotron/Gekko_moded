@@ -8,13 +8,13 @@ const retry = require('../exchangeUtils').retry;
 
 const marketData = require('./bitfinex-markets.json');
 
-var Trader = function(config) {
+var Margin_trader = function(config) {
   _.bindAll(this);
   if(_.isObject(config)) {
     this.key = config.key;
     this.secret = config.secret;
   }
-  this.name = 'Bitfinex';
+  this.name = 'bitfinex_margin';
   this.balance;
   this.price;
   this.asset = config.asset;
@@ -47,7 +47,7 @@ const recoverableErrors = [
   'Nonce is too small'
 ];
 
-Trader.prototype.handleResponse = function(funcName, callback) {
+Margin_trader.prototype.handleResponse = function(funcName, callback) {
   return (error, data) => {
 
     if(!error && _.isEmpty(data)) {
@@ -101,9 +101,10 @@ Trader.prototype.handleResponse = function(funcName, callback) {
 
     return callback(error, data);
   }
+
 };
 
-Trader.prototype.getPortfolio = function(callback) {
+Margin_trader.prototype.getPortfolio = function(callback) {
   const processResponse = (err, data) => {
     if (err) return callback(err);
 
@@ -139,7 +140,7 @@ Trader.prototype.getPortfolio = function(callback) {
   retry(null, fetch, processResponse);
 }
 
-Trader.prototype.getTicker = function(callback) {
+Margin_trader.prototype.getTicker = function(callback) {
   const processResponse = (err, data) => {
     if (err)
       return callback(err);
@@ -151,22 +152,22 @@ Trader.prototype.getTicker = function(callback) {
   retry(null, fetch, processResponse);
 }
 
-Trader.prototype.getFee = function(callback) {
+Margin_trader.prototype.getFee = function(callback) {
   const makerFee = 0.1;
   // const takerFee = 0.2;
   callback(undefined, makerFee / 100);
 }
 
-Trader.prototype.roundAmount = function(amount) {
+Margin_trader.prototype.roundAmount = function(amount) {
   return Math.floor(amount*100000000)/100000000;
 }
 
-Trader.prototype.roundPrice = function(price) {
+Margin_trader.prototype.roundPrice = function(price) {
   // todo: calc significant digits
   return price;
 }
 
-Trader.prototype.submitOrder = function(type, amount, price, callback) {
+Margin_trader.prototype.submitOrder = function(type, amount, price, callback) {
   const processResponse = (err, data) => {
     if (err)
       return callback(err);
@@ -186,15 +187,15 @@ Trader.prototype.submitOrder = function(type, amount, price, callback) {
   retry(null, fetch, processResponse);
 }
 
-Trader.prototype.buy = function(amount, price, callback) {
+Margin_trader.prototype.buy = function(amount, price, callback) {
   this.submitOrder('buy', amount, price, callback);
 }
 
-Trader.prototype.sell = function(amount, price, callback) {
+Margin_trader.prototype.sell = function(amount, price, callback) {
   this.submitOrder('sell', amount, price, callback);
 }
 
-Trader.prototype.checkOrder = function(order_id, callback) {
+Margin_trader.prototype.checkOrder = function(order_id, callback) {
   const processResponse = (err, data) => {
     if (err) {
       console.log('this is after we have retried fetching it');
@@ -222,7 +223,7 @@ Trader.prototype.checkOrder = function(order_id, callback) {
 }
 
 
-Trader.prototype.getOrder = function(order_id, callback) {
+Margin_trader.prototype.getOrder = function(order_id, callback) {
   const processResponse = (err, data) => {
     if (err) return callback(err);
 
@@ -262,7 +263,7 @@ Trader.prototype.getOrder = function(order_id, callback) {
 }
 
 
-Trader.prototype.cancelOrder = function(order_id, callback) {
+Margin_trader.prototype.cancelOrder = function(order_id, callback) {
   const processResponse = (err, data) => {
     if (err) {
       return callback(err);
@@ -275,7 +276,7 @@ Trader.prototype.cancelOrder = function(order_id, callback) {
   retry(null, handler, processResponse);
 }
 
-Trader.prototype.getTrades = function(since, callback, descending) {
+Margin_trader.prototype.getTrades = function(since, callback, descending) {
   const processResponse = (err, data) => {
     if (err) return callback(err);
 
@@ -299,7 +300,7 @@ Trader.prototype.getTrades = function(since, callback, descending) {
   retry(null, handler, processResponse);
 }
 
-Trader.getCapabilities = function () {
+Margin_trader.getCapabilities = function () {
   return {
     name: 'Bitfinex',
     slug: 'bitfinex',
@@ -316,4 +317,4 @@ Trader.getCapabilities = function () {
   };
 }
 
-module.exports = Trader;
+module.exports = Margin_trader;
