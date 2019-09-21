@@ -3,12 +3,15 @@ const Bitfinex = require("bitfinex-api-node");
 const _ = require('lodash');
 const moment = require('moment');
 
+
+
 const Errors = require('../exchangeErrors');
 const retry = require('../exchangeUtils').retry;
 
 const marketData = require('./bitfinex-markets.json');
 
 var Trader = function(config) {
+
   _.bindAll(this);
   if(_.isObject(config)) {
     this.key = config.key;
@@ -136,11 +139,11 @@ Trader.prototype.getPortfolio = function(callback) {
     }
 
 
-
+   // this.broker.portfolio.balances.push({currency_now: currency.available});
     const portfolio = [
       { name: this.asset, amount: assetAmount },
-      { name: this.currency, amount: currencyAmount },
-    ];
+      { name: this.currency, amount: currencyAmount, aviable: currency.amount },
+      ];
     console.log(assetAmount, currencyAmount,  portfolio, currency, asset, data );////
     callback(undefined, portfolio);
   };

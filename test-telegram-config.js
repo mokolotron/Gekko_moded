@@ -104,7 +104,7 @@ config.trader = {
 }
 
 config.eventLogger = {
-  enabled: true,
+  enabled: false,
   // optionally pass a whitelist of events to log, if not past
   // the eventLogger will log _all_ events.
   // whitelist: ['portfolioChange', 'portfolioValueChange']
