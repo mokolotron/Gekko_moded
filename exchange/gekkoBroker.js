@@ -76,6 +76,8 @@ class Broker {
     return checker.cantTrade(this.config);
   }
 
+
+
   cantMonitor() {
     return checker.cantMonitor(this.config);
   }
@@ -134,6 +136,10 @@ class Broker {
       amount,
       price
     });
+  }
+  ////
+  createMarketOrder(side, ){
+    this.api.submitOrder(side)
   }
 
   createOrder(type, side, amount, parameters, handler) {

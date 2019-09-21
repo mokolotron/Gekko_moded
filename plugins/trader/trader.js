@@ -253,6 +253,7 @@ Trader.prototype.processAdvice = function(advice) {
       }else {
         console.log("we in a long");
         ////TODO close position and go short
+       // this.order = this.broker.createMarketOrder('sell');
       }
     }
 

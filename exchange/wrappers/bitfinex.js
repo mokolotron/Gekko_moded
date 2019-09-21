@@ -107,6 +107,7 @@ Trader.prototype.handleResponse = function(funcName, callback) {
 };
 
 Trader.prototype.getPortfolio = function(callback) {
+  console.log('////',this.bitfinex);
   const processResponse = (err, data) => {
     if (err) return callback(err);
 
@@ -141,7 +142,7 @@ Trader.prototype.getPortfolio = function(callback) {
 
    // this.broker.portfolio.balances.push({currency_now: currency.available});
     const portfolio = [
-      { name: this.asset, amount: assetAmount },
+      { name: this.asset, amount: assetAmount,  },
       { name: this.currency, amount: currencyAmount, aviable: currency.amount },
       ];
     console.log(assetAmount, currencyAmount,  portfolio, currency, asset, data );////
@@ -181,7 +182,8 @@ Trader.prototype.roundPrice = function(price) {
 
 Trader.prototype.submitOrder = function(side, amount, price, callback, type) {
   const processResponse = (err, data) => {
-    console.log(data); ////
+    console.log(data); ///// data.original_amount, data.remaining_amount
+    /////засторити цей амоунт і це буде розмір asset to close position/////
     if (err)
       return callback(err);
 
