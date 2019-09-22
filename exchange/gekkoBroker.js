@@ -138,8 +138,10 @@ class Broker {
     });
   }
   ////
-  createMarketOrder(side, ){
-    this.api.submitOrder(side)
+  createMarketOrder(side ){
+      console.log("market oredr!!!");
+      console.log(this.api.toString());
+      this.api.closePosition();
   }
 
   createOrder(type, side, amount, parameters, handler) {

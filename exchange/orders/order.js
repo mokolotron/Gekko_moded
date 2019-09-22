@@ -81,7 +81,8 @@ class BaseOrder extends EventEmitter {
     this.emit('completed', {
       status: this.status,
       filled
-    })
+    });
+    console.log("order", this)
   }
 }
 

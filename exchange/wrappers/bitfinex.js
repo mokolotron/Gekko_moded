@@ -48,7 +48,31 @@ const recoverableErrors = [
   '502',
   'Empty response',
   'Nonce is too small'
-];
+]
+
+Trader.prototype.closePosition = function(){
+   this.bitfinex.active_positions((err, res) => {
+     if (err) console.log(err);
+     try {
+       this.position_amount = res.forEach((elem) => {
+         if (this.pair.toLowerCase().localeCompare(elem.symbol) === 0)
+            this.position_amount = elem.amount;
+       });
+     }catch (e) {
+       console.log("why I there???");
+     }
+     if (this.position_amount > 0)
+       this.side = 'sell';
+     else
+       this.side = 'buy';
+
+       console.log('close' ,this.position_amount, this.pair.toLowerCase(), this.side, res);
+   });
+     const showResult = (err, result) => {console.log(err, result)};
+     this.submitOrder(this.side, (Math.abs(this.position_amount)).toFixed(8), 0, showResult, 'market');
+    //this.bitfinex.new_order(this.pair.toLowerCase(), Math.abs(this.position_amount), )
+    // console.log('close');
+};
 
 Trader.prototype.handleResponse = function(funcName, callback) {
   return (error, data) => {

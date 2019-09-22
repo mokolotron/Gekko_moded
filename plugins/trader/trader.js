@@ -3,6 +3,7 @@ const util = require('../../core/util.js');
 const config = util.getConfig();
 const dirs = util.dirs();
 const moment = require('moment');
+const bitfinex = require("bitfinex-api-node");
 
 const log = require(dirs.core + 'log');
 const Broker = require(dirs.broker + '/gekkoBroker');
@@ -193,8 +194,9 @@ Trader.prototype.processAdvice = function(advice) {
 
     if (this.exposed2) {
       if(this.portfolio.asset === 0){
-        log.info('we in a short')
+        log.info('we in a short');
         ////TODO close position and buy
+          this.broker.createMarketOrder()
       }else {
         log.info('NOT buying, already exposed');
         return this.deferredEmit('tradeAborted', {
@@ -237,7 +239,7 @@ Trader.prototype.processAdvice = function(advice) {
   } else if(direction === 'sell') {
     ////if we want to sell we must sell not that amount which we have but that
     //// amount we will can have or amount of currency(not asset)
-
+      this.broker.createMarketOrder();
     if (this.exposed2) {
       if(this.portfolio.asset === 0){
         log.info('we in a short')
@@ -253,6 +255,7 @@ Trader.prototype.processAdvice = function(advice) {
       }else {
         console.log("we in a long");
         ////TODO close position and go short
+          this.broker.createMarketOrder()
        // this.order = this.broker.createMarketOrder('sell');
       }
     }
