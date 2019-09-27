@@ -50,26 +50,57 @@ const recoverableErrors = [
   'Nonce is too small'
 ]
 
-Trader.prototype.closePosition = function(){
-   this.bitfinex.active_positions((err, res) => {
-     if (err) console.log(err);
-     try {
-       this.position_amount = res.forEach((elem) => {
-         if (this.pair.toLowerCase().localeCompare(elem.symbol) === 0)
-            this.position_amount = elem.amount;
-       });
-     }catch (e) {
-       console.log("why I there???");
-     }
-     if (this.position_amount > 0)
-       this.side = 'sell';
-     else
-       this.side = 'buy';
+Trader.prototype.getPositionAmount = function () {
 
-       console.log('close' ,this.position_amount, this.pair.toLowerCase(), this.side, res);
-   });
-     const showResult = (err, result) => {console.log(err, result)};
-     this.submitOrder(this.side, (Math.abs(this.position_amount)).toFixed(8), 0, showResult, 'market');
+    let amount = null;
+
+  this.bitfinex.active_positions((err, res) => {
+    if (err) console.log(err);
+    try {
+     res.forEach((elem) => {
+       console.log(elem);
+        if (this.pair.toLowerCase().localeCompare(elem.symbol) === 0)
+          this.pos_amount = elem.amount;
+      });
+    }catch (e) {
+      console.log("why I there???");
+    }
+    // return amount;
+   // Trader.pos_amount = amount ;
+    // if (this.position_amount > 0)
+    //   this.side = 'sell';
+    // else
+    //   this.side = 'buy';
+    //
+    // console.log('close' ,this.position_amount, this.pair.toLowerCase(), this.side, res);
+  })
+
+
+};
+
+
+Trader.prototype.closePosition = function(){
+  let side = null;
+
+  //this.position_amount = this.getPositionAmount();
+  console.log(this.setBalance);
+  this.exposed2 = this.setBalance();
+  console.log(this.exposed2);
+   //const order_amount = this.getPositionAmount();
+   if(this.exposed2 === 0||this.exposed2 === null) { //If we havnt setBalance try again
+     log.err('Havent exposed2');
+     this.setBalance();
+   }
+   else if(this.exposed2 === 1)
+     side = "sell";
+   else if(this.exposed2 === -1)
+     side = "buy";
+
+   const pos_amount =  Math.abs(this.position_amount).toFixed(8);
+   console.log("close POSITION PARAMERTS", pos_amount, side,);
+   /////
+     const showResult = (err, result) => {console.log("Close POSITION RESULT", err, result)};
+     this.submitOrder(side, pos_amount , 0, showResult, 'market');
     //this.bitfinex.new_order(this.pair.toLowerCase(), Math.abs(this.position_amount), )
     // console.log('close');
 };

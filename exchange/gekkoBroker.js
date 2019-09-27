@@ -140,9 +140,15 @@ class Broker {
   ////
   createMarketOrder(side ){
       console.log("market oredr!!!");
-      console.log(this.api.toString());
+      //console.log(this.api.toString());
       this.api.closePosition();
   }
+
+  ////
+    getPositionAmount(){
+     return this.api.getPositionAmount();
+    }
+
 
   createOrder(type, side, amount, parameters, handler) {
     if(!this.config.private)

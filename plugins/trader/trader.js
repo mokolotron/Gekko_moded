@@ -107,10 +107,10 @@ Trader.prototype.setPortfolio = function() {
       this.broker.portfolio.balances,
       b => b.name === this.brokerConfig.asset
     ).amount,
-    currency_all: _.find(
-      this.broker.portfolio.balances,
-      b => b.name === this.brokerConfig.currency
-    ).aviable,
+    // currency_all: _.find(
+    //   this.broker.portfolio.balances,
+    //   b => b.name === this.brokerConfig.currency
+    // ).aviable,
   }
 }
 
@@ -118,18 +118,23 @@ Trader.prototype.setBalance = function() {
   this.balance = this.portfolio.currency + this.portfolio.asset * this.price;
   this.exposure = (this.portfolio.asset * this.price) / this.balance;
   // if more than 10% of balance is in asset we are exposed
-  if (this.portfolio.currency_all !== this.portfolio.currency) {
-    this.exposed2 = true;
-  } else {
-    this.exposed2 = false;
-  }
+  this.pos_amount  = this.broker.getPositionAmount();
+  //  console.log(this.position_amount);
+    if( this.pos_amount === 0)
+        this.exposed2 = 0; //without
+    else if( this.pos_amount > 0 )
+        this.exposed2 = 1; //long
+    else if( this.pos_amount < 0 )
+        this.exposed2 = -1; //short
+    else
+        this.exposed2 = null;
+
   this.exposed = this.exposure > 0.1;
-
-
 
   console.log(this.portfolio);
  // console.log('!!!!!!!', this.portfolio);
-  console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed, this.exposed2);////
+  console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed, this.exposed2, this.pos_amount);////
+  return this.exposed2
 };
 
 Trader.prototype.processCandle = function(candle, done) {
@@ -192,44 +197,23 @@ Trader.prototype.processAdvice = function(advice) {
 
   if(direction === 'buy') {
 
-    if (this.exposed2) {
-      if(this.portfolio.asset === 0){
-        log.info('we in a short');
-        ////TODO close position and buy
-          this.broker.createMarketOrder()
-      }else {
+    if (this.exposed2 === 1) {
         log.info('NOT buying, already exposed');
         return this.deferredEmit('tradeAborted', {
-          id,
-          adviceId: advice.id,
-          action: direction,
-          portfolio: this.portfolio,
-          balance: this.balance,
-          reason: "Portfolio already in position."
+            id,
+            adviceId: advice.id,
+            action: direction,
+            portfolio: this.portfolio,
+            balance: this.balance,
+            reason: "Portfolio already in position."
         });
-      }
     }
 
-    // if(this.exposed) {
-    //   log.info('NOT buying, already exposed');
-    //   return this.deferredEmit('tradeAborted', {
-    //     id,
-    //     adviceId: advice.id,
-    //     action: direction,
-    //     portfolio: this.portfolio,
-    //     balance: this.balance,
-    //     reason: "Portfolio already in position."
-    //   });
-    // }
+      ////TODO close position and buy
+      this.broker.createMarketOrder();
 
     amount = this.portfolio.currency / this.price * 0.95;
 
-
-
-    if(amount > 0){
-      ////there  must be function buy() which is in old version
-      //it must be in direction because after then nothing
-    }
     log.info(
       'Trader',
       'Received advice to go long.',
@@ -239,26 +223,22 @@ Trader.prototype.processAdvice = function(advice) {
   } else if(direction === 'sell') {
     ////if we want to sell we must sell not that amount which we have but that
     //// amount we will can have or amount of currency(not asset)
-      this.broker.createMarketOrder();
-    if (this.exposed2) {
-      if(this.portfolio.asset === 0){
-        log.info('we in a short')
-        log.info('NOT SELLING, already exposed');
+     // this.broker.createMarketOrder();
+    if (this.exposed2 === -1) {
+     log.info('NOT SELLING, already exposed');
         return this.deferredEmit('tradeAborted', {
-          id,
-          adviceId: advice.id,
-          action: direction,
-          portfolio: this.portfolio,
-          balance: this.balance,
-          reason: "Portfolio already in position."
+            id,
+            adviceId: advice.id,
+            action: direction,
+            portfolio: this.portfolio,
+            balance: this.balance,
+            reason: "Portfolio already in position."
         });
-      }else {
-        console.log("we in a long");
-        ////TODO close position and go short
-          this.broker.createMarketOrder()
-       // this.order = this.broker.createMarketOrder('sell');
-      }
     }
+       ////TODO close position and go short
+      this.broker.createMarketOrder();
+       // this.order = this.broker.createMarketOrder('sell');
+
 
     // clean up potential old stop trigger
     if(this.activeStopTrigger) {
