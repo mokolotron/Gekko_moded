@@ -112,29 +112,16 @@ Trader.prototype.setPortfolio = function() {
     //   b => b.name === this.brokerConfig.currency
     // ).aviable,
   }
-}
+};
+
+
 
 Trader.prototype.setBalance = function() {
   this.balance = this.portfolio.currency + this.portfolio.asset * this.price;
   this.exposure = (this.portfolio.asset * this.price) / this.balance;
+
   // if more than 10% of balance is in asset we are exposed
-  this.pos_amount  = this.broker.getPositionAmount();
-  //  console.log(this.position_amount);
-    if( this.pos_amount === 0)
-        this.exposed2 = 0; //without
-    else if( this.pos_amount > 0 )
-        this.exposed2 = 1; //long
-    else if( this.pos_amount < 0 )
-        this.exposed2 = -1; //short
-    else
-        this.exposed2 = null;
-
   this.exposed = this.exposure > 0.1;
-
-  console.log(this.portfolio);
- // console.log('!!!!!!!', this.portfolio);
-  console.log('!!!!!!!!!!!!!!!!', this.exposure, this.exposed, this.exposed2, this.pos_amount);////
-  return this.exposed2
 };
 
 Trader.prototype.processCandle = function(candle, done) {
@@ -193,84 +180,94 @@ Trader.prototype.processAdvice = function(advice) {
     return this.cancelOrder(id, advice, () => this.processAdvice(advice));
   }
 
-  let amount;
+  //let amount;
+//this.exposed2 = null;
+// while(this.exposed2 === null){
+//   setTimeout(()=>{this.exposed2 = this.broker.checkTradingPosition();  console.log(this.exposed2);} , 1000)  ;
+// }
+  this.broker.checkTradingPosition().then(({exposed2, pos_amount}) => {
+    console.log({exposed2, pos_amount});
 
-  if(direction === 'buy') {
+    if(direction === 'buy') {
 
-    if (this.exposed2 === 1) {
+      if (this.exposed2 === 1) {
         log.info('NOT buying, already exposed');
         return this.deferredEmit('tradeAborted', {
-            id,
-            adviceId: advice.id,
-            action: direction,
-            portfolio: this.portfolio,
-            balance: this.balance,
-            reason: "Portfolio already in position."
+          id,
+          adviceId: advice.id,
+          action: direction,
+          portfolio: this.portfolio,
+          balance: this.balance,
+          reason: "Portfolio already in position."
         });
-    }
+      }
 
       ////TODO close position and buy
-      this.broker.createMarketOrder();
+      this.broker.closePosition(exposed2, pos_amount);
 
-    amount = this.portfolio.currency / this.price * 0.95;
+      amount = this.portfolio.currency / this.price * 0.95;
 
-    log.info(
-      'Trader',
-      'Received advice to go long.',
-      'Buying ', this.brokerConfig.asset
-    );
+      log.info(
+        'Trader',
+        'Received advice to go long.',
+        'Buying ', this.brokerConfig.asset
+      );
 
-  } else if(direction === 'sell') {
-    ////if we want to sell we must sell not that amount which we have but that
-    //// amount we will can have or amount of currency(not asset)
-     // this.broker.createMarketOrder();
-    if (this.exposed2 === -1) {
-     log.info('NOT SELLING, already exposed');
+    } else if(direction === 'sell') {
+      ////if we want to sell we must sell not that amount which we have but that
+      //// amount we will can have or amount of currency(not asset)
+      // this.broker.createMarketOrder();
+      if (this.exposed2 === -1) {
+        log.info('NOT SELLING, already exposed');
         return this.deferredEmit('tradeAborted', {
-            id,
-            adviceId: advice.id,
-            action: direction,
-            portfolio: this.portfolio,
-            balance: this.balance,
-            reason: "Portfolio already in position."
+          id,
+          adviceId: advice.id,
+          action: direction,
+          portfolio: this.portfolio,
+          balance: this.balance,
+          reason: "Portfolio already in position."
         });
+      }
+      ////TODO close position and go short
+      this.broker.closePosition(exposed2, pos_amount);
+      // this.order = this.broker.createMarketOrder('sell');
+
+
+      // clean up potential old stop trigger
+      if(this.activeStopTrigger) {
+        this.deferredEmit('triggerAborted', {
+          id: this.activeStopTrigger.id,
+          date: advice.date
+        });
+
+        this.activeStopTrigger.instance.cancel();
+
+        delete this.activeStopTrigger;
+      }
+      //console.log('!!!!!!!!!!',  this.portfolio); ////
+      //// amount = this.portfolio.asset;
+      amount = this.portfolio.currency / this.price * 0.95;
+      log.info(
+        'Trader',
+        'Received advice to go short.',
+        'Selling ', this.brokerConfig.asset
+      );
     }
-       ////TODO close position and go short
-      this.broker.createMarketOrder();
-       // this.order = this.broker.createMarketOrder('sell');
-
-
-    // clean up potential old stop trigger
-    if(this.activeStopTrigger) {
-      this.deferredEmit('triggerAborted', {
-        id: this.activeStopTrigger.id,
-        date: advice.date
-      });
-
-      this.activeStopTrigger.instance.cancel();
-
-      delete this.activeStopTrigger;
+    else if (direction === 'close'){
+      log.debug("CLOSES")
+      log.info(
+        'Trader',
+        'Received advice to close position',
+        'Selling ', config.trader.asset
+      );
+      this.manager.trade('CLOSE');
     }
-    //console.log('!!!!!!!!!!',  this.portfolio); ////
-   //// amount = this.portfolio.asset;
-    amount = this.portfolio.currency / this.price * 0.95;
-    log.info(
-      'Trader',
-      'Received advice to go short.',
-      'Selling ', this.brokerConfig.asset
-    );
-  }
-  else if (direction === 'close'){
-    log.debug("CLOSES")
-    log.info(
-      'Trader',
-      'Received advice to close position',
-      'Selling ', config.trader.asset
-    );
-    this.manager.trade('CLOSE');
-  }
 
-  this.createOrder(direction, amount, advice, id);
+    this.createOrder(direction, amount, advice, id);
+
+  },
+    (reason, err) => console.log(reason, err));
+
 };
 
 

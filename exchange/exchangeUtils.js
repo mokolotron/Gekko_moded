@@ -66,6 +66,9 @@ const isValidOrder = ({api, market, amount, price}) => {
   // Check amount //// Maybe i ster schoss svoye
   if(amount < market.minimalOrder.amount) {
     reason = 'Amount is too small';
+    ////
+    console.log(amount);
+    console.log(market.minimalOrder.amount);
   }
 
   // Some exchanges have restrictions on prices

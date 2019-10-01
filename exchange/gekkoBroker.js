@@ -138,16 +138,20 @@ class Broker {
     });
   }
   ////
-  createMarketOrder(side ){
-      console.log("market oredr!!!");
+  closePosition(exposed2, pos_amount ){
+      //console.log("close oredr!!!");
       //console.log(this.api.toString());
-      this.api.closePosition();
+      this.api.closePosition(exposed2, pos_amount);
+  }
+////
+  checkTradingPosition(){
+    return this.api.getPositionAmount();
   }
 
   ////
-    getPositionAmount(){
-     return this.api.getPositionAmount();
-    }
+  //   getPositionAmount(){
+  //    return this.api.getPositionAmount("from_broker");
+  //   }
 
 
   createOrder(type, side, amount, parameters, handler) {

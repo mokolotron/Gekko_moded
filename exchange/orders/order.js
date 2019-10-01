@@ -82,7 +82,7 @@ class BaseOrder extends EventEmitter {
       status: this.status,
       filled
     });
-    console.log("order", this)
+
   }
 }
 
