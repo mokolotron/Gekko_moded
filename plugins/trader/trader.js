@@ -56,7 +56,7 @@ const Trader = function(next) {
 // teach our trader events
 util.makeEventEmitter(Trader);
 
-Trader.prototype.sync = function(next) {
+Trader.prototype.sync = async function(next) {
   log.debug('syncing private data');
   this.broker.syncPrivateData(() => {
     console.log('Im here 61');
@@ -148,7 +148,7 @@ Trader.prototype.processCandle = function(candle, done) {
   done();
 }
 
-Trader.prototype.processAdvice = function(advice) {
+Trader.prototype.processAdvice =  function(advice) {
   let direction;
 
   if(advice.recommendation === 'long') {
@@ -228,8 +228,9 @@ Trader.prototype.processAdvice = function(advice) {
           reason: "Portfolio already in position."
         });
       }
-      ////TODO close position and go short
-      this.broker.closePosition(exposed2, pos_amount);
+        ////TODO close position and go short
+         this.broker.closePosition(exposed2, pos_amount);
+
       // this.order = this.broker.createMarketOrder('sell');
 
 
@@ -246,7 +247,7 @@ Trader.prototype.processAdvice = function(advice) {
       }
       //console.log('!!!!!!!!!!',  this.portfolio); ////
       //// amount = this.portfolio.asset;
-      amount = this.portfolio.currency / this.price * 0.95;
+      amount = this.portfolio.currency / this.price*0.95;
       log.info(
         'Trader',
         'Received advice to go short.',
@@ -263,11 +264,14 @@ Trader.prototype.processAdvice = function(advice) {
       this.manager.trade('CLOSE');
     }
 
-    this.createOrder(direction, amount, advice, id);
 
-  },
-    (reason, err) => console.log(reason, err));
 
+  }).then(async ()=> {
+    await this.sync(()=>{
+      this.createOrder(direction, (this.portfolio.currency/this.price*0.95) , advice, id)
+    })
+
+  })
 };
 
 

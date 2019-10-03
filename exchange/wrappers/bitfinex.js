@@ -118,35 +118,42 @@ return promise = new Promise((resolve, rejected) => {
 
 Trader.prototype.closePosition = function(exposed2, pos_amount){
   let side = null;
+  let price = null;
 
   //this.position_amount = this.getPositionAmount();
   //console.log(this.setBalance);
   //this.exposed2 = this.setBalance();
   //console.log(this.exposed2);
    //const order_amount = this.getPositionAmount();
-   if(this.exposed2 === 0||this.exposed2 === null) { //If we havnt setBalance try again
+   if(exposed2 === 0||exposed2 === null) { //If we havnt setBalance try again
+
      console.log("Nothing to CLOSE");
      return 0;
     // this.setBalance();
    }
-   else if(this.exposed2 === 1)
+   else if(exposed2 === 1) {
      side = "sell";
-   else if(this.exposed2 === -1)
-     side = "buy";
+     //(pos_amount *= -1).toFixed(10);
+     price = 0.1;
 
-   //change sign
-  console.log("pos_amount Start",pos_amount);
-  console.log("pos_amount Start to fixed", parseFloat(pos_amount).toFixed(10));
-   if(this.exposed2 === -1) (pos_amount *= -1).toFixed(10); // - -> +
-   else if(this.exposed2 === 1) (pos_amount *= -1).toFixed(10); //+ -> -
- // else if(this.exposed2 === 0) { }
-   console.log("close POSITION PARAMERTS", pos_amount, side,);
+     }
+   else if(exposed2 === -1) {
+     side = "buy";
+     (pos_amount *= -1).toFixed(10);
+     price = 10000000;
+   }
+
+
+  // console.log("pos_amount Start",pos_amount);
+  // console.log("pos_amount Start to fixed", parseFloat(pos_amount).toFixed(10));
+
+   console.log("close POSITION PARAMERTS", pos_amount, side, price);
 
    // Э ідея записувати 10000 коли хочем закрити шорт і  0.0000001 коли закрити лонг///////
 
    /////
      const showResult = (err, result) => {console.log("Close POSITION RESULT", err, result)};
-     this.submitOrder(side, pos_amount , 10000, showResult, 'market');
+     this.submitOrder(side, pos_amount , parseFloat(price), showResult, 'market');
     //this.bitfinex.new_order(this.pair.toLowerCase(), Math.abs(this.position_amount), )
     // console.log('close');
 };
@@ -213,7 +220,7 @@ Trader.prototype.getPortfolio = function(callback) {
     if (err) return callback(err);
 
     // We are only interested in funds in the "MARGIN" wallet
-    const leverage = 2.3;
+    const leverage = 2;
     data = data.filter(c => c.type === 'trading');
     ////multiply balance by 2 to take a leverage
     data = data.map((obj)=> {
@@ -291,7 +298,7 @@ Trader.prototype.submitOrder = function(side, amount, price, callback, type) {
     callback(null, data.order_id);
   };
 
-
+  console.log(price, )
 
   const fetch = cb => this.bitfinex.new_order(this.pair,
     amount + '',
@@ -307,11 +314,11 @@ Trader.prototype.submitOrder = function(side, amount, price, callback, type) {
 }
 
 Trader.prototype.buy = function(amount, price, callback) {
-  this.submitOrder('buy', amount, price, callback, 'limit');
+  this.submitOrder('buy', amount, price, callback, 'market');
 }
 
 Trader.prototype.sell = function(amount, price, callback) {
-  this.submitOrder('sell', amount, price, callback, 'limit');
+  this.submitOrder('sell', amount, price, callback, 'market');
 }
 
 Trader.prototype.checkOrder = function(order_id, callback) {
