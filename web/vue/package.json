@@ -10,7 +10,7 @@
     "babel-plugin-transform-commonjs-es2015-modules":"lastes",
     "babel": "^6.23.0",
     "babel-plugin-transform-commonjs-es2015-modules": "^4.0.1",
-    "chart.js": "^2.8.0",
+    "chart.js": "^2.9.4",
     "marked": "^0.4.0",
     "superagent": "^3.8.3",
     "superagent-no-cache": "github:uditalias/superagent-no-cache",
